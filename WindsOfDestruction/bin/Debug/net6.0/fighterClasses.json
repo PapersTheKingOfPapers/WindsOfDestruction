@@ -1,0 +1,44 @@
+{
+  "fighters": [
+    {
+      "fighterName": "Bladesman",
+      "id": 0,
+      "stats": {
+        "baseDamage": 5,
+        "baseHP": 120,
+        "baseHPdepleteMultiplier": 1,
+        "baseDamageMultiplier": 1
+      }
+    },
+    {
+      "fighterName": "Californian wildfire",
+      "id": 1,
+      "stats": {
+        "baseDamage": 10,
+        "baseHP": 100,
+        "baseHPdepleteMultiplier": 0.8,
+        "baseDamageMultiplier": 1
+      }
+    },
+    {
+      "fighterName": "Desert wind",
+      "id": 2,
+      "stats": {
+        "baseDamage": 6,
+        "baseHP": 110,
+        "baseHPdepleteMultiplier": 1,
+        "baseDamageMultiplier": 0.9
+      }
+    },
+    {
+      "fighterName": "Wind of Southeast Asia",
+      "id": 3,
+      "stats": {
+        "baseDamage": 3,
+        "baseHP": 80,
+        "baseHPdepleteMultiplier": 0.7,
+        "baseDamageMultiplier": 1
+      }
+    }
+  ]
+}

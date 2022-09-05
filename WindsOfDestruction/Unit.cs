@@ -9,6 +9,7 @@ namespace WindsOfDestruction
 {
     public class Unit
     {
+        #region Variables
         private string _name { get; set; }
         //Iniciating damage value
         private float _baseDamage { get; set; }
@@ -29,8 +30,10 @@ namespace WindsOfDestruction
         private double _currentHPdepleteMultiplier { get; set; }
         // 0 -> 0.1* damage given multiplier, 1 = 1* damage given multiplier, 0.1 = 0% and 1 = 100% value, 2 = 200% value
         private double _currentDamageMultiplier { get; set; }
+        public List<SpecialAttack> _specialAttacks { get; set; }
+        #endregion
 
-        public Unit(string name, float baseDamage, int baseHP, double baseHPdepleteMultiplier, double baseDamageMultiplier)
+        public Unit(string name, float baseDamage, int baseHP, double baseHPdepleteMultiplier, double baseDamageMultiplier, List<SpecialAttack> specialAttacks)
         {
             this._name = name;
             this._baseDamage = baseDamage;
@@ -43,6 +46,8 @@ namespace WindsOfDestruction
 
             this._currentHPdepleteMultiplier = Math.Clamp(this._baseHPdepleteMultiplier, 0.1, 2);
             this._currentDamageMultiplier = Math.Clamp(this._baseDamageMultiplier, 0.1, 2);
+
+            this._specialAttacks = specialAttacks;
         }
 
         //Check Methods
@@ -57,15 +62,52 @@ namespace WindsOfDestruction
         }
         public int Attack()
         {
-            this._currentDamage = Convert.ToInt32(Math.Ceiling(this._baseDamage * this._currentDamageMultiplier));
+            int sentDamage = Convert.ToInt32(Math.Ceiling(this._currentDamage * this._currentDamageMultiplier));
             //Console.WriteLine("Calculated Damage to give: " + this._currentDamage);
-            return Convert.ToInt32(this._currentDamage);
+            return Convert.ToInt32(sentDamage);
+        }
+
+        //Update methods
+        public void ChangeDamage(float newDamageValue)
+        {
+            this._currentDamage = newDamageValue;
+        }
+        public void ResetDamage()
+        {
+            this._currentDamage = this._baseDamage;
+        }
+        public void ChangeDamageMultiplier(double newDamageMultiplier)
+        {
+            this._currentDamageMultiplier = newDamageMultiplier;
+        }
+        public void ResetDamageMultiplier()
+        {
+            this._currentDamageMultiplier = this._baseDamageMultiplier;
+        }
+        public void ChangeDefenceMultiplier(double newHPdepleteMultiplier)
+        {
+            this._currentHPdepleteMultiplier = newHPdepleteMultiplier;
+        }
+        public void ResetDefenceMultiplier()
+        {
+            this._currentHPdepleteMultiplier = this._baseHPdepleteMultiplier;
         }
 
         //Information methods
+        public void PrintSpecialAttacks()
+        {
+            for(int i = 0; i < this._specialAttacks.Count; i++)
+            {
+                Console.WriteLine($"Index:{i}, {this._specialAttacks[i].attackName}, {this._specialAttacks[i].attackDescription}");
+            }
+        }
         public int CurrentHP()
         {
             return this._currentHP;
+        }
+        public int MaxHP()
+        {
+            return this._baseHP;
         }
         public string Name()
         {

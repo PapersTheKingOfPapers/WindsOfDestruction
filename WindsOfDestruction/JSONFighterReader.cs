@@ -16,6 +16,7 @@ namespace WindsOfDestruction
         public string fighterName { get; set; }
         public int id { get; set; }
         public Stats stats { get; set; }
+        public List<SpecialAttack> specialAttacks { get; set; }
     }
 
     public class Stats
@@ -25,5 +26,21 @@ namespace WindsOfDestruction
         public double baseHPdepleteMultiplier { get; set; }
         public double baseDamageMultiplier { get; set; }
 
+    }
+
+    public class SpecialAttack
+    {
+        public string attackName { get; set; }
+        public string attackDescription { get; set; }
+        public int attackType { get; set; }
+        public AttackStats attackStats { get; set; }
+    }
+
+    public class AttackStats
+    {
+        public int currentCoolDown { get; set; }
+        public int attackCoolDown { get; set; }
+        public double Stat1 { get; set; }
+        public double Stat2 { get; set; }
     }
 }

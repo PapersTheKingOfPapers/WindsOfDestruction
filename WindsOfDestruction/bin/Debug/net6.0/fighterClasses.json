@@ -1,7 +1,7 @@
 {
   "fighters": [
     {
-      "fighterName": "Bladesman",
+      "fighterName": "Mr. Lightning Bolt",
       "id": 0,
       "stats": {
         "baseDamage": 5,
@@ -18,25 +18,80 @@
         "baseHP": 100,
         "baseHPdepleteMultiplier": 0.8,
         "baseDamageMultiplier": 1
-      }
+      },
+      "specialAttacks": [
+        {
+          "attackName": "Bloodlust",
+          "attackDescription": "Uses his scissorblades to deal huge damage to the attacked enemy!",
+          "attackType": 3, // Extra damage attack
+          "attackStats": {
+            "currentCoolDown": 0,
+            "attackCoolDown": 3,
+            "Stat1": 2 // Attack Damage Multiplier
+          }
+        },
+        {
+          "attackName": "Explosive Anti-Personel Shields",
+          "attackDescription": "Enemies who attack while the shields are deployed get damaged!",
+          "attackType": 2, //Shield Attack
+          "attackStats": {
+            "currentCoolDown": 0,
+            "attackCoolDown": 2,
+            "Stat1": 40, //Attack Damage
+            "Stat2": 0.1 //Defence Multiplier
+          }
+        }
+      ]
     },
     {
       "fighterName": "Desert wind",
       "id": 2,
       "stats": {
-        "baseDamage": 6,
-        "baseHP": 110,
+        "baseDamage": 5,
+        "baseHP": 150,
         "baseHPdepleteMultiplier": 1,
-        "baseDamageMultiplier": 0.9
-      }
+        "baseDamageMultiplier": 1
+      },
+      "specialAttacks": [
+        {
+          "attackName": "Desert Rush",
+          "attackDescription": "Rushes at the enemies at high speeds to damage all of them!",
+          "attackType": 1, // Area Attack
+          "attackStats": {
+            "currentCoolDown": 0,
+            "attackCoolDown": 2,
+            "Stat1": 20 //Attack Damage
+          }
+        }
+      ]
     },
     {
       "fighterName": "Wind of Southeast Asia",
       "id": 3,
       "stats": {
-        "baseDamage": 3,
+        "baseDamage": 5,
         "baseHP": 80,
         "baseHPdepleteMultiplier": 0.7,
+        "baseDamageMultiplier": 1
+      }
+    },
+    {
+      "fighterName": "Typical Politician",
+      "id": 4,
+      "stats": {
+        "baseDamage": 20,
+        "baseHP": 200,
+        "baseHPdepleteMultiplier": 0.6,
+        "baseDamageMultiplier": 1.1
+      }
+    },
+    {
+      "fighterName": "Cool Brazilian Wind",
+      "id": 5,
+      "stats": {
+        "baseDamage": 15,
+        "baseHP": 100,
+        "baseHPdepleteMultiplier": 1,
         "baseDamageMultiplier": 1
       }
     }

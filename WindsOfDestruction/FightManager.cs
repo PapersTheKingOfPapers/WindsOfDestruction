@@ -53,14 +53,64 @@ namespace WindsOfDestruction
             }
             return false;
         }
-
         public void Victory(string teamName)
         {
             Console.WriteLine("--====--");
             Console.WriteLine(); // Empty Line
-
-
             Console.WriteLine($"The {teamName} won!");
+        }
+
+        //Special Attacks
+        public void AttackDeployer(Unit unit, int attackIndex)
+        {
+            int attackType = unit._specialAttacks[attackIndex].attackType;
+            if(unit._specialAttacks[attackIndex].attackStats.currentCoolDown == 0)
+            {
+                switch (attackType)
+                {
+                    case 1:
+                        AreaAttack(unit, attackIndex);
+                        break;
+                    case 2:
+                        ShieldAttack(unit);
+                        break;
+                    case 3:
+                        ExtraDamageAttack(unit);
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine("This attack is in cooldown!");
+            }
+        }
+        public void ExtraDamageAttack(Unit unit)
+        {
+
+        }
+        public void ShieldAttack(Unit unit)
+        {
+
+        }
+        public void AreaAttack(Unit unit, int attackIndex)
+        {
+            unit.ChangeDamage(Convert.ToSingle(unit._specialAttacks[attackIndex].attackStats.Stat1));
+            if (allies.Contains(unit))
+            {
+                foreach(Unit enemy in enemies)
+                {
+                    Attack(unit, enemy);
+                }
+            }
+            else if (enemies.Contains(unit))
+            {
+                foreach (Unit ally in allies)
+                {
+                    Attack(unit, ally);
+                }
+            }
+            unit.ResetDamage();
+            unit._specialAttacks[attackIndex].attackStats.currentCoolDown = unit._specialAttacks[attackIndex].attackStats.attackCoolDown;
         }
     }
 }

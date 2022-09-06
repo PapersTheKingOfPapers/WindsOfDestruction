@@ -6,7 +6,7 @@ FightManager fm = new FightManager();
 
 #region Variables
 
-
+int z = 0;
 
 #endregion
 
@@ -23,7 +23,7 @@ foreach (Fighter fighter in rt.fighters)
 #region makeAllies
 Console.WriteLine("Make your team:");
 Console.WriteLine(); //Empty Line
-while (true)
+while (true || z < 9)
 {
     Console.WriteLine("Warrior's name? (Empty to start fight)");
     string name = Console.ReadLine();
@@ -58,6 +58,7 @@ while (true)
     fm.allies.Add(ally);
     Console.WriteLine($"Added {rt.fighters[fighterClass].fighterName} {name} to your Allies.");
     Console.WriteLine("--=====--");
+    z++;
 }
 #endregion
 
@@ -66,8 +67,8 @@ int i = 0;
 while (i < (fm.allies.Count))
 {
     Random random = new Random();
-    int fighterClass = random.Next(rt.fighters.Count);
-
+    //int fighterClass = random.Next(rt.fighters.Count);
+    int fighterClass = 1;
     var statCall = rt.fighters[fighterClass].stats;
 
     Unit enemy = new Unit(rt.fighters[fighterClass].fighterName, statCall.baseDamage, statCall.baseHP, statCall.baseHPdepleteMultiplier, statCall.baseDamageMultiplier, rt.fighters[fighterClass].specialAttacks);
@@ -93,10 +94,13 @@ while (true)
     {
         break;
     }
+    UpdateCooldowns(fm.allies);
+
     #endregion
 
     #region enemyTurn
 
+    Console.WriteLine("--!!--");
     Console.WriteLine("The enemy approaches for an attack!");
 
     int enemyAttacker = rnd.Next(fm.enemies.Count);
@@ -108,6 +112,7 @@ while (true)
     {
         break;
     }
+    UpdateCooldowns(fm.enemies);
     #endregion
 }
 #endregion
@@ -116,6 +121,7 @@ while (true)
 
 void TurnType()
 {
+    Console.WriteLine("--!!--");
     Console.WriteLine("What will you do!"); // Choose what the fuck yo gonna do
     Console.WriteLine("0: Attack!");
     Console.WriteLine("1: Use a special action!");
@@ -147,7 +153,7 @@ void TurnType()
 
 void AttackTurn()
 {
-    Console.WriteLine("--====--");
+    Console.WriteLine("--!!--");
     Console.WriteLine("The enemies braces for an attack!");
     PrintTeam(fm.allies);
     Console.WriteLine("Choose your attacker! [ID]");
@@ -155,13 +161,12 @@ void AttackTurn()
     PrintTeam(fm.enemies);
     Console.WriteLine("Choose who to attack! [ID]");
     int enemyAttacked = Convert.ToInt32(Console.ReadLine());
-
     fm.Attack(fm.allies[alliedAttacker], fm.enemies[enemyAttacked]);
 }
 
 void SpecialAttackTurn()
 {
-    Console.WriteLine("--====--");
+    Console.WriteLine("--!!--");
     Console.WriteLine("The enemies braces for an attack!");
     PrintTeam(fm.allies);
     Console.WriteLine("Choose your attacker! [ID]");
@@ -176,10 +181,21 @@ void PrintTeam(List<Unit> team)
 {
     for (int x = 0; x < team.Count; x++)
     {
-        int healthPercent = team[x].CurrentHP();
+        double currentHP = team[x].CurrentHP();
+        double temp = currentHP / team[x].MaxHP() * 100;
+        int healthPercent = Convert.ToInt32(Math.Ceiling(temp));
         Console.WriteLine($"{team[x].Name()}, ID: {x}");
         ValueBar.WriteProgressBar(healthPercent);
-        Console.WriteLine($" {team[x].CurrentHP()} / {team[x].MaxHP()}");
+        Console.WriteLine($" {currentHP} / {team[x].MaxHP()}");
+    }
+}
+
+void UpdateCooldowns(List<Unit> team)
+{
+    Console.WriteLine("--!!-- STATUS ALERT! --!!--");
+    foreach (Unit unit in team)
+    {
+        unit.UpdateCoolDowns();
     }
 }
 

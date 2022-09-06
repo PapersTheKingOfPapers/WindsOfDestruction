@@ -31,6 +31,8 @@ namespace WindsOfDestruction
         // 0 -> 0.1* damage given multiplier, 1 = 1* damage given multiplier, 0.1 = 0% and 1 = 100% value, 2 = 200% value
         private double _currentDamageMultiplier { get; set; }
         public List<SpecialAttack> _specialAttacks { get; set; }
+        private bool shieldAttackActive { get; set; }
+        private double _counterDamage { get; set; }
         #endregion
 
         public Unit(string name, float baseDamage, int baseHP, double baseHPdepleteMultiplier, double baseDamageMultiplier, List<SpecialAttack> specialAttacks)
@@ -44,10 +46,12 @@ namespace WindsOfDestruction
             this._currentDamage = this._baseDamage;
             this._currentHP = this._baseHP;
 
-            this._currentHPdepleteMultiplier = Math.Clamp(this._baseHPdepleteMultiplier, 0.1, 2);
+            this._currentHPdepleteMultiplier = Math.Clamp(this._baseHPdepleteMultiplier, 0, 2);
             this._currentDamageMultiplier = Math.Clamp(this._baseDamageMultiplier, 0.1, 2);
 
             this._specialAttacks = specialAttacks;
+            this.shieldAttackActive = false;
+            this._counterDamage = 0;
         }
 
         //Check Methods
@@ -92,6 +96,48 @@ namespace WindsOfDestruction
         {
             this._currentHPdepleteMultiplier = this._baseHPdepleteMultiplier;
         }
+        public void UpdateCoolDowns()
+        {
+            if (this._specialAttacks != null)
+            {
+                for (int i = 0; i < this._specialAttacks.Count; i++)
+                {
+                    if (this._specialAttacks[i].attackStats.currentCoolDown > 0)
+                    {
+                        if (this._specialAttacks[i].attackStats.currentCoolDown == 1)
+                        {
+                            Console.WriteLine($"{this._name}'s {this._specialAttacks[i].attackName} is ready to use!");
+                        }
+                        this._specialAttacks[i].attackStats.currentCoolDown--;
+                    }
+
+                    if (this._specialAttacks[i].attackStats.currentPersistTime > 0)
+                    {
+                        if (this._specialAttacks[i].attackStats.currentPersistTime == 2)
+                        {
+                            Console.WriteLine($"{this._name}'s '{this._specialAttacks[i].attackName}' is about to end!");
+                        }
+                        this._specialAttacks[i].attackStats.currentPersistTime--;
+
+                        if(this._specialAttacks[i].attackStats.currentPersistTime == 0)
+                        {
+                            Console.WriteLine($"{this._name}'s '{this._specialAttacks[i].attackName}' has ended!");
+                            this.shieldAttackActive = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        public void EnableShields()
+        {
+            this.shieldAttackActive = true;
+            Console.WriteLine($"DEBUG : {this._name}'s shields have activated!");
+        }
+        public void SetCounterDamage(double counterDamageValue)
+        {
+            this._counterDamage = counterDamageValue;
+        }
 
         //Information methods
         public void PrintSpecialAttacks()
@@ -112,6 +158,14 @@ namespace WindsOfDestruction
         public string Name()
         {
             return this._name;
+        }
+        public bool ShieldsStatus()
+        {
+            return this.shieldAttackActive;
+        }
+        public double CounterDamageValue()
+        {
+            return this._counterDamage;
         }
     }
 }

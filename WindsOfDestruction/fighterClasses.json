@@ -36,7 +36,9 @@
           "attackType": 2, //Shield Attack
           "attackStats": {
             "currentCoolDown": 0,
-            "attackCoolDown": 2,
+            "attackCoolDown": 6,
+            "currentPersistTime": 0,
+            "PersistTime": 3,
             "Stat1": 40, //Attack Damage
             "Stat2": 0.1 //Defence Multiplier
           }
@@ -83,7 +85,31 @@
         "baseHP": 200,
         "baseHPdepleteMultiplier": 0.6,
         "baseDamageMultiplier": 1.1
-      }
+      },
+      "specialAttacks": [
+        {
+          "attackName": "Political Opression",
+          "attackDescription": "Release a bill that raises the price of hospital bills!",
+          "attackType": 1, // Area Attack
+          "attackStats": {
+            "currentCoolDown": 0,
+            "attackCoolDown": 2,
+            "Stat1": 20 //Attack Damage
+          }
+        },
+        {
+          "attackName": "Nanomachines Son!",
+          "attackDescription": "Become Invulnerable for 3 Turns",
+          "attackType": 4, //FUCKING INVINCIBLE
+          "attackStats": {
+            "currentCoolDown": 0,
+            "attackCoolDown": 6,
+            "currentPersistTime": 0,
+            "PersistTime": 3,
+            "Stat1": 0 //Defence Multiplier
+          }
+        }
+      ]
     },
     {
       "fighterName": "Cool Brazilian Wind",

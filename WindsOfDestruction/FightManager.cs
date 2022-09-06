@@ -13,15 +13,30 @@ namespace WindsOfDestruction
 
         public void Attack(Unit attacker, Unit attacked)
         {
-            int hpBeforeAttack = attacked.CurrentHP();
-            attacked.Damage(attacker.Attack());
-            int attackDamage = hpBeforeAttack - attacked.CurrentHP();
+            if (attacked.ShieldsStatus())
+            {
+                int hpBeforeAttack = attacker.CurrentHP();
+                attacked.ChangeDamage(Convert.ToSingle(attacked.CounterDamageValue()));
+                attacker.Damage(attacked.Attack());
+                attacked.ResetDamage();
+                int attackDamage = hpBeforeAttack - attacker.CurrentHP();
 
-            Console.WriteLine($"{attacker.Name()} attacked {attacked.Name()} for {attackDamage} HP");
+                Console.WriteLine($"{attacker.Name()} tried to attack {attacked.Name()}, but failed!");
+                Console.WriteLine($"{attacked.Name()}'s shields caused {attackDamage} HPs worth of damage to {attacker.Name()}");
 
-            SurviveCheck(attacked);
+                SurviveCheck(attacker);
+            }
+            else
+            {
+                int hpBeforeAttack = attacked.CurrentHP();
+                attacked.Damage(attacker.Attack());
+                int attackDamage = hpBeforeAttack - attacked.CurrentHP();
+
+                Console.WriteLine($"{attacker.Name()} attacked {attacked.Name()} for {attackDamage} HP");
+
+                SurviveCheck(attacked);
+            }
         }
-
         public void SurviveCheck(Unit attacked)
         {
             if (attacked.CurrentHP() <= 0)
@@ -72,7 +87,7 @@ namespace WindsOfDestruction
                         AreaAttack(unit, attackIndex);
                         break;
                     case 2:
-                        ShieldAttack(unit);
+                        ShieldAttack(unit, attackIndex);
                         break;
                     case 3:
                         ExtraDamageAttack(unit);
@@ -88,9 +103,15 @@ namespace WindsOfDestruction
         {
 
         }
-        public void ShieldAttack(Unit unit)
+        public void ShieldAttack(Unit unit, int attackIndex)
         {
+            unit.EnableShields();
 
+            unit.SetCounterDamage(unit._specialAttacks[attackIndex].attackStats.Stat1);
+            unit.ChangeDefenceMultiplier(unit._specialAttacks[attackIndex].attackStats.Stat2);
+
+            unit._specialAttacks[attackIndex].attackStats.currentPersistTime = unit._specialAttacks[attackIndex].attackStats.persistTime + 1;
+            unit._specialAttacks[attackIndex].attackStats.currentCoolDown = unit._specialAttacks[attackIndex].attackStats.attackCoolDown + 1;
         }
         public void AreaAttack(Unit unit, int attackIndex)
         {
@@ -110,7 +131,7 @@ namespace WindsOfDestruction
                 }
             }
             unit.ResetDamage();
-            unit._specialAttacks[attackIndex].attackStats.currentCoolDown = unit._specialAttacks[attackIndex].attackStats.attackCoolDown;
+            unit._specialAttacks[attackIndex].attackStats.currentCoolDown = unit._specialAttacks[attackIndex].attackStats.attackCoolDown + 1;
         }
     }
 }

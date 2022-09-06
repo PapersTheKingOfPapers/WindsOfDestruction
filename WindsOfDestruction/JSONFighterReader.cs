@@ -40,6 +40,8 @@ namespace WindsOfDestruction
     {
         public int currentCoolDown { get; set; }
         public int attackCoolDown { get; set; }
+        public int currentPersistTime { get; set; }
+        public int persistTime { get; set; }
         public double Stat1 { get; set; }
         public double Stat2 { get; set; }
     }

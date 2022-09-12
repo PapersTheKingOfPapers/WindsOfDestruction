@@ -10,7 +10,6 @@ int z = 0;
 
 #endregion
 
-
 #region preBattle
 Console.WriteLine("Possible unit classes:");
 //Prints each enemy
@@ -67,8 +66,7 @@ int i = 0;
 while (i < (fm.allies.Count))
 {
     Random random = new Random();
-    //int fighterClass = random.Next(rt.fighters.Count);
-    int fighterClass = 1;
+    int fighterClass = random.Next(rt.fighters.Count);
     var statCall = rt.fighters[fighterClass].stats;
 
     Unit enemy = new Unit(rt.fighters[fighterClass].fighterName, statCall.baseDamage, statCall.baseHP, statCall.baseHPdepleteMultiplier, statCall.baseDamageMultiplier, rt.fighters[fighterClass].specialAttacks);

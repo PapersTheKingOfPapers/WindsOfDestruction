@@ -33,11 +33,6 @@ namespace WindsOfDestruction
         public string attackName { get; set; }
         public string attackDescription { get; set; }
         public int attackType { get; set; }
-        public AttackStats attackStats { get; set; }
-    }
-
-    public class AttackStats
-    {
         public int currentCoolDown { get; set; }
         public int attackCoolDown { get; set; }
         public int currentPersistTime { get; set; }

@@ -79,18 +79,18 @@ namespace WindsOfDestruction
         public void AttackDeployer(Unit unit, int attackIndex)
         {
             int attackType = unit._specialAttacks[attackIndex].attackType;
-            if(unit._specialAttacks[attackIndex].attackStats.currentCoolDown == 0)
+            if(unit._specialAttacks[attackIndex].currentCoolDown == 0)
             {
                 switch (attackType)
                 {
-                    case 1:
+                    case 1: //Area Attack
                         AreaAttack(unit, attackIndex);
                         break;
-                    case 2:
+                    case 2: //Shield Attack
                         ShieldAttack(unit, attackIndex);
                         break;
-                    case 3:
-                        ExtraDamageAttack(unit);
+                    case 3: //Extra Damage for Next turn
+                        ExtraDamageAttack(unit, attackIndex);
                         break;
                 }
             }
@@ -99,23 +99,26 @@ namespace WindsOfDestruction
                 Console.WriteLine("This attack is in cooldown!");
             }
         }
-        public void ExtraDamageAttack(Unit unit)
+        public void ExtraDamageAttack(Unit unit, int attackIndex)
         {
+            unit.ChangeDamageMultiplier(unit._specialAttacks[attackIndex].Stat1);
 
+            unit._specialAttacks[attackIndex].currentPersistTime = unit._specialAttacks[attackIndex].persistTime + 1;
+            unit._specialAttacks[attackIndex].currentCoolDown = unit._specialAttacks[attackIndex].attackCoolDown + 1;
         }
         public void ShieldAttack(Unit unit, int attackIndex)
         {
             unit.EnableShields();
 
-            unit.SetCounterDamage(unit._specialAttacks[attackIndex].attackStats.Stat1);
-            unit.ChangeDefenceMultiplier(unit._specialAttacks[attackIndex].attackStats.Stat2);
+            unit.SetCounterDamage(unit._specialAttacks[attackIndex].Stat1);
+            unit.ChangeDefenceMultiplier(unit._specialAttacks[attackIndex].Stat2);
 
-            unit._specialAttacks[attackIndex].attackStats.currentPersistTime = unit._specialAttacks[attackIndex].attackStats.persistTime + 1;
-            unit._specialAttacks[attackIndex].attackStats.currentCoolDown = unit._specialAttacks[attackIndex].attackStats.attackCoolDown + 1;
+            unit._specialAttacks[attackIndex].currentPersistTime = unit._specialAttacks[attackIndex].persistTime + 1;
+            unit._specialAttacks[attackIndex].currentCoolDown = unit._specialAttacks[attackIndex].attackCoolDown + 1;
         }
         public void AreaAttack(Unit unit, int attackIndex)
         {
-            unit.ChangeDamage(Convert.ToSingle(unit._specialAttacks[attackIndex].attackStats.Stat1));
+            unit.ChangeDamage(Convert.ToSingle(unit._specialAttacks[attackIndex].Stat1));
             if (allies.Contains(unit))
             {
                 foreach(Unit enemy in enemies)
@@ -131,7 +134,7 @@ namespace WindsOfDestruction
                 }
             }
             unit.ResetDamage();
-            unit._specialAttacks[attackIndex].attackStats.currentCoolDown = unit._specialAttacks[attackIndex].attackStats.attackCoolDown + 1;
+            unit._specialAttacks[attackIndex].currentCoolDown = unit._specialAttacks[attackIndex].attackCoolDown + 1;
         }
     }
 }

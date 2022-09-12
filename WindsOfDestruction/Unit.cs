@@ -33,6 +33,7 @@ namespace WindsOfDestruction
         public List<SpecialAttack> _specialAttacks { get; set; }
         private bool shieldAttackActive { get; set; }
         private double _counterDamage { get; set; }
+        private bool hasExtraDamageEnabled { get; set; }
         #endregion
 
         public Unit(string name, float baseDamage, int baseHP, double baseHPdepleteMultiplier, double baseDamageMultiplier, List<SpecialAttack> specialAttacks)
@@ -49,8 +50,9 @@ namespace WindsOfDestruction
             this._currentHPdepleteMultiplier = Math.Clamp(this._baseHPdepleteMultiplier, 0, 2);
             this._currentDamageMultiplier = Math.Clamp(this._baseDamageMultiplier, 0.1, 2);
 
-            this._specialAttacks = specialAttacks;
+            this._specialAttacks = specialAttacks.Clone();
             this.shieldAttackActive = false;
+            this.hasExtraDamageEnabled = false;
             this._counterDamage = 0;
         }
 
@@ -102,33 +104,47 @@ namespace WindsOfDestruction
             {
                 for (int i = 0; i < this._specialAttacks.Count; i++)
                 {
-                    if (this._specialAttacks[i].attackStats.currentCoolDown > 0)
+                    if (this._specialAttacks[i].currentCoolDown > 0)
                     {
-                        if (this._specialAttacks[i].attackStats.currentCoolDown == 1)
+                        //Console.WriteLine($"DEBUG : {this._name}'s {this._specialAttacks[i].attackName} current cooldown is {this._specialAttacks[i].currentCoolDown}");
+
+                        if (this._specialAttacks[i].currentCoolDown == 1)
                         {
                             Console.WriteLine($"{this._name}'s {this._specialAttacks[i].attackName} is ready to use!");
                         }
-                        this._specialAttacks[i].attackStats.currentCoolDown--;
+                        this._specialAttacks[i].currentCoolDown--;
                     }
 
-                    if (this._specialAttacks[i].attackStats.currentPersistTime > 0)
+                    if (this._specialAttacks[i].currentPersistTime > 0)
                     {
-                        if (this._specialAttacks[i].attackStats.currentPersistTime == 2)
+                        //Console.WriteLine($"DEBUG : {this._name}'s {this._specialAttacks[i].attackName} current persist time is {this._specialAttacks[i].currentPersistTime}");
+
+                        if (this._specialAttacks[i].currentPersistTime == 2)
                         {
                             Console.WriteLine($"{this._name}'s '{this._specialAttacks[i].attackName}' is about to end!");
                         }
-                        this._specialAttacks[i].attackStats.currentPersistTime--;
 
-                        if(this._specialAttacks[i].attackStats.currentPersistTime == 0)
+                        this._specialAttacks[i].currentPersistTime--;
+
+                        if(this._specialAttacks[i].currentPersistTime == 0)
                         {
                             Console.WriteLine($"{this._name}'s '{this._specialAttacks[i].attackName}' has ended!");
-                            this.shieldAttackActive = false;
+                            switch (this._specialAttacks[i].attackType)
+                            {
+                                case 2:
+                                    this.shieldAttackActive = false;
+                                    ResetDefenceMultiplier();
+                                    break;
+                                case 3:
+                                    ResetDamageMultiplier();
+                                    this.hasExtraDamageEnabled = false;
+                                    break;
+                            }
                         }
                     }
                 }
             }
         }
-
         public void EnableShields()
         {
             this.shieldAttackActive = true;
@@ -144,7 +160,8 @@ namespace WindsOfDestruction
         {
             for(int i = 0; i < this._specialAttacks.Count; i++)
             {
-                Console.WriteLine($"Index:{i}, {this._specialAttacks[i].attackName}, {this._specialAttacks[i].attackDescription}");
+                Console.WriteLine($"Index: {i}, {this._specialAttacks[i].attackName}, {this._specialAttacks[i].attackDescription}");
+                Console.WriteLine($"Current Cooldown: {this._specialAttacks[i].currentCoolDown}, {this._specialAttacks[i].attackName}, {this._specialAttacks[i].attackDescription}");
             }
         }
         public int CurrentHP()

@@ -24,24 +24,22 @@
           "attackName": "Bloodlust",
           "attackDescription": "Uses his scissorblades to deal huge damage to the attacked enemy!",
           "attackType": 3, // Extra damage attack
-          "attackStats": {
-            "currentCoolDown": 0,
-            "attackCoolDown": 3,
-            "Stat1": 2 // Attack Damage Multiplier
-          }
+          "currentCoolDown": 0,
+          "attackCoolDown": 3,
+          "currentPersistTime": 0,
+          "PersistTime": 1,
+          "Stat1": 2 // Attack Damage Multiplier
         },
         {
           "attackName": "Explosive Anti-Personel Shields",
           "attackDescription": "Enemies who attack while the shields are deployed get damaged!",
           "attackType": 2, //Shield Attack
-          "attackStats": {
-            "currentCoolDown": 0,
-            "attackCoolDown": 6,
-            "currentPersistTime": 0,
-            "PersistTime": 3,
-            "Stat1": 40, //Attack Damage
-            "Stat2": 0.1 //Defence Multiplier
-          }
+          "currentCoolDown": 0,
+          "attackCoolDown": 6,
+          "currentPersistTime": 0,
+          "PersistTime": 3,
+          "Stat1": 40, //Attack Damage
+          "Stat2": 0.1 //Defence Multiplier
         }
       ]
     },
@@ -59,11 +57,9 @@
           "attackName": "Desert Rush",
           "attackDescription": "Rushes at the enemies at high speeds to damage all of them!",
           "attackType": 1, // Area Attack
-          "attackStats": {
-            "currentCoolDown": 0,
-            "attackCoolDown": 2,
-            "Stat1": 20 //Attack Damage
-          }
+          "currentCoolDown": 0,
+          "attackCoolDown": 2,
+          "Stat1": 20 //Attack Damage
         }
       ]
     },
@@ -91,23 +87,19 @@
           "attackName": "Political Opression",
           "attackDescription": "Release a bill that raises the price of hospital bills!",
           "attackType": 1, // Area Attack
-          "attackStats": {
-            "currentCoolDown": 0,
-            "attackCoolDown": 2,
-            "Stat1": 20 //Attack Damage
-          }
+          "currentCoolDown": 0,
+          "attackCoolDown": 2,
+          "Stat1": 20 //Attack Damage
         },
         {
           "attackName": "Nanomachines Son!",
           "attackDescription": "Become Invulnerable for 3 Turns",
           "attackType": 4, //FUCKING INVINCIBLE
-          "attackStats": {
-            "currentCoolDown": 0,
-            "attackCoolDown": 6,
-            "currentPersistTime": 0,
-            "PersistTime": 3,
-            "Stat1": 0 //Defence Multiplier
-          }
+          "currentCoolDown": 0,
+          "attackCoolDown": 6,
+          "currentPersistTime": 0,
+          "PersistTime": 3,
+          "Stat1": 0 //Defence Multiplier
         }
       ]
     },

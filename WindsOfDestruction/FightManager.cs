@@ -74,6 +74,18 @@ namespace WindsOfDestruction
             Console.WriteLine(); // Empty Line
             Console.WriteLine($"The {teamName} won!");
         }
+        public void PrintTeam(List<Unit> team)
+        {
+            for (int x = 0; x < team.Count; x++)
+            {
+                double currentHP = team[x].CurrentHP();
+                double temp = currentHP / team[x].MaxHP() * 100;
+                int healthPercent = Convert.ToInt32(Math.Ceiling(temp));
+                Console.WriteLine($"{team[x].Name()}, ID: {x}");
+                ValueBar.WriteProgressBar(healthPercent);
+                Console.WriteLine($" {currentHP} / {team[x].MaxHP()}");
+            }
+        }
 
         //Special Attacks
         public void AttackDeployer(Unit unit, int attackIndex)
@@ -102,8 +114,29 @@ namespace WindsOfDestruction
         public void ExtraDamageAttack(Unit unit, int attackIndex)
         {
             unit.ChangeDamageMultiplier(unit._specialAttacks[attackIndex].Stat1);
-
-            unit._specialAttacks[attackIndex].currentPersistTime = unit._specialAttacks[attackIndex].persistTime + 1;
+            if (allies.Contains(unit))
+            {
+                PrintTeam(enemies);
+                Console.WriteLine("Choose who to attack! [ID]");
+                int enemyAttacked = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
+                try
+                {
+                    int c = allies[enemyAttacked].CurrentHP();
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    enemyAttacked = 0;
+                }
+                Console.WriteLine();
+                Attack(unit, enemies[enemyAttacked]);
+            }
+            else if (enemies.Contains(unit))
+            {
+                Random rnd = new Random();
+                int ally = rnd.Next(allies.Count);
+                Attack(unit, allies[ally]);
+            }
+            unit.ResetDamageMultiplier();
             unit._specialAttacks[attackIndex].currentCoolDown = unit._specialAttacks[attackIndex].attackCoolDown + 1;
         }
         public void ShieldAttack(Unit unit, int attackIndex)

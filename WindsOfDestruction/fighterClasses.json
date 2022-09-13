@@ -26,8 +26,6 @@
           "attackType": 3, // Extra damage attack
           "currentCoolDown": 0,
           "attackCoolDown": 3,
-          "currentPersistTime": 0,
-          "PersistTime": 1,
           "Stat1": 2 // Attack Damage Multiplier
         },
         {

@@ -33,7 +33,6 @@ namespace WindsOfDestruction
         public List<SpecialAttack> _specialAttacks { get; set; }
         private bool shieldAttackActive { get; set; }
         private double _counterDamage { get; set; }
-        private bool hasExtraDamageEnabled { get; set; }
         #endregion
 
         public Unit(string name, float baseDamage, int baseHP, double baseHPdepleteMultiplier, double baseDamageMultiplier, List<SpecialAttack> specialAttacks)
@@ -52,7 +51,6 @@ namespace WindsOfDestruction
 
             this._specialAttacks = specialAttacks.Clone();
             this.shieldAttackActive = false;
-            this.hasExtraDamageEnabled = false;
             this._counterDamage = 0;
         }
 
@@ -119,6 +117,11 @@ namespace WindsOfDestruction
                     {
                         //Console.WriteLine($"DEBUG : {this._name}'s {this._specialAttacks[i].attackName} current persist time is {this._specialAttacks[i].currentPersistTime}");
 
+                        if (this._specialAttacks[i].currentPersistTime > 2)
+                        {
+                            Console.WriteLine($"{this._name}'s '{this._specialAttacks[i].attackName}' is currently active!");
+                        }
+
                         if (this._specialAttacks[i].currentPersistTime == 2)
                         {
                             Console.WriteLine($"{this._name}'s '{this._specialAttacks[i].attackName}' is about to end!");
@@ -135,10 +138,6 @@ namespace WindsOfDestruction
                                     this.shieldAttackActive = false;
                                     ResetDefenceMultiplier();
                                     break;
-                                case 3:
-                                    ResetDamageMultiplier();
-                                    this.hasExtraDamageEnabled = false;
-                                    break;
                             }
                         }
                     }
@@ -148,7 +147,7 @@ namespace WindsOfDestruction
         public void EnableShields()
         {
             this.shieldAttackActive = true;
-            Console.WriteLine($"DEBUG : {this._name}'s shields have activated!");
+            //Console.WriteLine($"DEBUG : {this._name}'s shields have activated!");
         }
         public void SetCounterDamage(double counterDamageValue)
         {
@@ -161,7 +160,7 @@ namespace WindsOfDestruction
             for(int i = 0; i < this._specialAttacks.Count; i++)
             {
                 Console.WriteLine($"Index: {i}, {this._specialAttacks[i].attackName}, {this._specialAttacks[i].attackDescription}");
-                Console.WriteLine($"Current Cooldown: {this._specialAttacks[i].currentCoolDown}, {this._specialAttacks[i].attackName}, {this._specialAttacks[i].attackDescription}");
+                Console.WriteLine($"Current Cooldown: {this._specialAttacks[i].currentCoolDown}");
             }
         }
         public int CurrentHP()

@@ -35,18 +35,17 @@ while (true || z < 9)
         break;
     }
     Console.WriteLine("Warrior's class' id?");
-    string fighterClassString = Console.ReadLine();
-    int fighterClass = 0;
+    int fighterClass = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
     try
     {
-        fighterClass = Convert.ToInt32(fighterClassString);
+        int c = rt.fighters[fighterClass].id;
     }
-    catch(FormatException)
+    catch (IndexOutOfRangeException)
     {
         fighterClass = 0;
     }
-
-    if(!rt.fighters.Any(item=>item.id == fighterClass))
+    Console.WriteLine();
+    if (!rt.fighters.Any(item=>item.id == fighterClass))
     {
         fighterClass = 0;
     }
@@ -85,27 +84,21 @@ while (true)
 {
     Random rnd = new Random();
     #region playerTurn
-
     TurnType();
-
     if (fm.VictoryCheck() == true)
     {
         break;
     }
     UpdateCooldowns(fm.allies);
-
     #endregion
-
     #region enemyTurn
-
     Console.WriteLine("--!!--");
     Console.WriteLine("The enemy approaches for an attack!");
 
     int enemyAttacker = rnd.Next(fm.enemies.Count);
     int alliedAttacked = rnd.Next(fm.allies.Count);
-
+    
     fm.Attack(fm.enemies[enemyAttacker],fm.allies[alliedAttacked]);
-
     if (fm.VictoryCheck() == true)
     {
         break;
@@ -123,17 +116,16 @@ void TurnType()
     Console.WriteLine("What will you do!"); // Choose what the fuck yo gonna do
     Console.WriteLine("0: Attack!");
     Console.WriteLine("1: Use a special action!");
-    string turnChoiceString = Console.ReadLine();
-    int turnChoice = 0;
+    int turnChoice = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
     try
     {
-        turnChoice = Convert.ToInt32(turnChoiceString);
+        int c = turnChoice;
     }
-    catch (FormatException)
+    catch (IndexOutOfRangeException)
     {
         turnChoice = 0;
     }
-
+    Console.Clear();
     switch (turnChoice)
     {
         default:
@@ -146,19 +138,37 @@ void TurnType()
             SpecialAttackTurn();
             break;
     }
-
 }
 
 void AttackTurn()
 {
     Console.WriteLine("--!!--");
     Console.WriteLine("The enemies braces for an attack!");
-    PrintTeam(fm.allies);
+    fm.PrintTeam(fm.allies);
     Console.WriteLine("Choose your attacker! [ID]");
-    int alliedAttacker = Convert.ToInt32(Console.ReadLine());
-    PrintTeam(fm.enemies);
+    int alliedAttacker = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
+
+    try
+    {
+        int c = fm.allies[alliedAttacker].CurrentHP();
+    }
+    catch (IndexOutOfRangeException)
+    {
+        alliedAttacker = 0;
+    }
+    Console.WriteLine();
+    fm.PrintTeam(fm.enemies);
     Console.WriteLine("Choose who to attack! [ID]");
-    int enemyAttacked = Convert.ToInt32(Console.ReadLine());
+    int enemyAttacked = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
+    try
+    {
+        int c = fm.allies[enemyAttacked].CurrentHP();
+    }
+    catch (IndexOutOfRangeException)
+    {
+        enemyAttacked = 0;
+    }
+    Console.WriteLine();
     fm.Attack(fm.allies[alliedAttacker], fm.enemies[enemyAttacked]);
 }
 
@@ -166,26 +176,33 @@ void SpecialAttackTurn()
 {
     Console.WriteLine("--!!--");
     Console.WriteLine("The enemies braces for an attack!");
-    PrintTeam(fm.allies);
+    fm.PrintTeam(fm.allies);
     Console.WriteLine("Choose your attacker! [ID]");
-    int alliedAttacker = Convert.ToInt32(Console.ReadLine());
+    int alliedAttacker = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
     Console.WriteLine("What will they do!");
-    fm.allies[alliedAttacker].PrintSpecialAttacks();
-    int specialAttackIndex = Convert.ToInt32(Console.ReadLine());
-    fm.AttackDeployer(fm.allies[alliedAttacker], specialAttackIndex);
-}
 
-void PrintTeam(List<Unit> team)
-{
-    for (int x = 0; x < team.Count; x++)
+    try
     {
-        double currentHP = team[x].CurrentHP();
-        double temp = currentHP / team[x].MaxHP() * 100;
-        int healthPercent = Convert.ToInt32(Math.Ceiling(temp));
-        Console.WriteLine($"{team[x].Name()}, ID: {x}");
-        ValueBar.WriteProgressBar(healthPercent);
-        Console.WriteLine($" {currentHP} / {team[x].MaxHP()}");
+        int c = fm.allies[alliedAttacker].CurrentHP();
     }
+    catch (IndexOutOfRangeException)
+    {
+        alliedAttacker = 0;
+    }
+    Console.WriteLine();
+    fm.allies[alliedAttacker].PrintSpecialAttacks();
+    int specialAttackIndex = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
+
+    try
+    {
+        int c = fm.allies[alliedAttacker]._specialAttacks[specialAttackIndex].attackType;
+    }
+    catch (IndexOutOfRangeException)
+    {
+        specialAttackIndex = 0;
+    }
+    Console.WriteLine();
+    fm.AttackDeployer(fm.allies[alliedAttacker], specialAttackIndex);
 }
 
 void UpdateCooldowns(List<Unit> team)

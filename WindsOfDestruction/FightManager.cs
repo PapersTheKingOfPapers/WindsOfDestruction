@@ -82,7 +82,7 @@ namespace WindsOfDestruction
                 double temp = currentHP / team[x].MaxHP() * 100;
                 int healthPercent = Convert.ToInt32(Math.Ceiling(temp));
                 Console.WriteLine($"{team[x].Name()}, ID: {x}");
-                ValueBar.WriteProgressBar(healthPercent);
+                ValueBar.WriteProgressBar(healthPercent, ConsoleColor.DarkYellow);
                 Console.WriteLine($" {currentHP} / {team[x].MaxHP()}");
             }
         }
@@ -104,11 +104,21 @@ namespace WindsOfDestruction
                     case 3: //Extra Damage for Next turn
                         ExtraDamageAttack(unit, attackIndex);
                         break;
+                    case 4: //Invincible
+                        Invincible(unit, attackIndex);
+                        break;
                 }
             }
             else
             {
-                Console.WriteLine("This attack is in cooldown!");
+                if(unit._specialAttacks[attackIndex].currentPersistTime != 0)
+                {
+                    Console.WriteLine("This status is already active!");
+                }
+                else
+                {
+                    Console.WriteLine("This attack is in cooldown!");
+                }
             }
         }
         public void ExtraDamageAttack(Unit unit, int attackIndex)
@@ -116,6 +126,7 @@ namespace WindsOfDestruction
             unit.ChangeDamageMultiplier(unit._specialAttacks[attackIndex].Stat1);
             if (allies.Contains(unit))
             {
+                ExtraDamageAttackStart:
                 PrintTeam(enemies);
                 Console.WriteLine("Choose who to attack! [ID]");
                 int enemyAttacked = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
@@ -128,6 +139,13 @@ namespace WindsOfDestruction
                     enemyAttacked = 0;
                 }
                 Console.WriteLine();
+
+                if (SystemExtension.UndoCheck())
+                {
+                    Console.Clear();
+                    goto ExtraDamageAttackStart;
+                }
+
                 Attack(unit, enemies[enemyAttacked]);
             }
             else if (enemies.Contains(unit))
@@ -167,6 +185,13 @@ namespace WindsOfDestruction
                 }
             }
             unit.ResetDamage();
+            unit._specialAttacks[attackIndex].currentCoolDown = unit._specialAttacks[attackIndex].attackCoolDown + 1;
+        }
+        public void Invincible(Unit unit, int attackIndex)
+        {
+            unit.ChangeDefenceMultiplier(unit._specialAttacks[attackIndex].Stat1);
+
+            unit._specialAttacks[attackIndex].currentPersistTime = unit._specialAttacks[attackIndex].persistTime + 1;
             unit._specialAttacks[attackIndex].currentCoolDown = unit._specialAttacks[attackIndex].attackCoolDown + 1;
         }
     }

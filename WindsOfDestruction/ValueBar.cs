@@ -11,6 +11,8 @@ namespace WindsOfDestruction
         const char _block = '■';
         const string _back = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
         const string _twirl = "-\\|/";
+
+        #region DefaultValueBar
         public static void WriteProgressBar(int percent, bool update = false)
         {
             if (update)
@@ -32,5 +34,39 @@ namespace WindsOfDestruction
                 Console.Write("\b");
             Console.Write(_twirl[progress % _twirl.Length]);
         }
+        #endregion
+        #region ColoredValueBars
+        public static void WriteProgressBar(int percent, ConsoleColor foregroundColor, bool update = false)
+        {
+            if (update)
+                Console.Write(_back);
+            Console.Write("[");
+            var p = (int)((percent / 10f) + .5f);
+            for (var i = 0; i < 10; ++i)
+            {
+                if (i >= p)
+                    SystemExtension.WriteColored(Char.ToString(' '), foregroundColor);
+                else
+                    SystemExtension.WriteColored(Char.ToString(_block), foregroundColor);
+            }
+            Console.Write("] {0,3:##0}%", percent);
+        }
+
+        public static void WriteProgressBar(int percent, ConsoleColor foregroundColor, ConsoleColor backgroundColor, bool update = false)
+        {
+            if (update)
+                Console.Write(_back);
+            Console.Write("[");
+            var p = (int)((percent / 10f) + .5f);
+            for (var i = 0; i < 10; ++i)
+            {
+                if (i >= p)
+                    SystemExtension.WriteColored(Char.ToString(' '), foregroundColor, backgroundColor);
+                else
+                    SystemExtension.WriteColored(Char.ToString(_block), foregroundColor, backgroundColor);
+            }
+            Console.Write("] {0,3:##0}%", percent);
+        }
+        #endregion
     }
 }

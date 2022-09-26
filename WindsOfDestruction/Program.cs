@@ -1,5 +1,10 @@
 ﻿using WindsOfDestruction;
 using Newtonsoft.Json;
+using System.Reflection.Emit;
+using System.Linq.Expressions;
+
+Console.ForegroundColor = SystemExtension.defaultForegroundColor;
+Console.BackgroundColor = SystemExtension.defaultBackgroundColor;
 
 JSONFighterReader rt = JsonConvert.DeserializeObject<JSONFighterReader>(File.ReadAllText(@".\fighterClasses.json"));
 FightManager fm = new FightManager();
@@ -80,14 +85,14 @@ while (i < (fm.allies.Count))
 #endregion
 
 #region Battle
-while (true)
+while (true) //Battle Loop
 {
     Random rnd = new Random();
     #region playerTurn
     TurnType();
     if (fm.VictoryCheck() == true)
     {
-        break;
+        break; //Ends battle
     }
     UpdateCooldowns(fm.allies);
     #endregion
@@ -101,7 +106,7 @@ while (true)
     fm.Attack(fm.enemies[enemyAttacker],fm.allies[alliedAttacked]);
     if (fm.VictoryCheck() == true)
     {
-        break;
+        break; //Ends battle
     }
     UpdateCooldowns(fm.enemies);
     #endregion
@@ -142,6 +147,7 @@ void TurnType()
 
 void AttackTurn()
 {
+    AttackTurnStart:
     Console.WriteLine("--!!--");
     Console.WriteLine("The enemies braces for an attack!");
     fm.PrintTeam(fm.allies);
@@ -156,10 +162,12 @@ void AttackTurn()
     {
         alliedAttacker = 0;
     }
+
     Console.WriteLine();
     fm.PrintTeam(fm.enemies);
     Console.WriteLine("Choose who to attack! [ID]");
     int enemyAttacked = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
+
     try
     {
         int c = fm.allies[enemyAttacked].CurrentHP();
@@ -168,17 +176,27 @@ void AttackTurn()
     {
         enemyAttacked = 0;
     }
+
     Console.WriteLine();
+
+    if (SystemExtension.UndoCheck())
+    {
+        Console.Clear();
+        goto AttackTurnStart;
+    }
+
     fm.Attack(fm.allies[alliedAttacker], fm.enemies[enemyAttacked]);
 }
 
 void SpecialAttackTurn()
 {
+    SpecialAttackTurnStart:
     Console.WriteLine("--!!--");
     Console.WriteLine("The enemies braces for an attack!");
     fm.PrintTeam(fm.allies);
     Console.WriteLine("Choose your attacker! [ID]");
     int alliedAttacker = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
+    Console.WriteLine();
     Console.WriteLine("What will they do!");
 
     try
@@ -189,6 +207,7 @@ void SpecialAttackTurn()
     {
         alliedAttacker = 0;
     }
+
     Console.WriteLine();
     fm.allies[alliedAttacker].PrintSpecialAttacks();
     int specialAttackIndex = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
@@ -201,7 +220,15 @@ void SpecialAttackTurn()
     {
         specialAttackIndex = 0;
     }
+
     Console.WriteLine();
+
+    if (SystemExtension.UndoCheck())
+    {
+        Console.Clear();
+        goto SpecialAttackTurnStart;
+    }
+
     fm.AttackDeployer(fm.allies[alliedAttacker], specialAttackIndex);
 }
 

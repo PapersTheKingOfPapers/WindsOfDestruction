@@ -25,7 +25,6 @@ namespace WindsOfDestruction
         public int baseHP { get; set; }
         public double baseHPdepleteMultiplier { get; set; }
         public double baseDamageMultiplier { get; set; }
-
     }
 
     public class SpecialAttack

@@ -157,7 +157,7 @@ namespace WindsOfDestruction
         //Information methods
         public void PrintSpecialAttacks()
         {
-            for(int i = 0; i < this._specialAttacks.Count; i++)
+            for (int i = 0; i < this._specialAttacks.Count; i++)
             {
                 Console.WriteLine($"Index: {i}, {this._specialAttacks[i].attackName}, {this._specialAttacks[i].attackDescription}");
                 Console.WriteLine($"Current Cooldown: {this._specialAttacks[i].currentCoolDown}");

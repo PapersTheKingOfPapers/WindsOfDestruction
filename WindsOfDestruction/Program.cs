@@ -209,6 +209,12 @@ void SpecialAttackTurn()
     }
 
     Console.WriteLine();
+    if(fm.allies[alliedAttacker]._specialAttacks == null)
+    {
+        Console.Clear();
+        Console.WriteLine("This character has no special attacks!");
+        return;
+    }
     fm.allies[alliedAttacker].PrintSpecialAttacks();
     int specialAttackIndex = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
 

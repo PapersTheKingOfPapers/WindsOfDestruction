@@ -31,7 +31,7 @@ namespace WindsOfDestruction
                 int hpBeforeAttack = attacked.CurrentHP();
                 attacked.Damage(attacker.Attack());
                 int attackDamage = hpBeforeAttack - attacked.CurrentHP();
-
+                ActionLogWriterAndReader.WriteAttackLog(attacked, attacker, hpBeforeAttack, attackDamage);
                 Console.WriteLine($"{attacker.Name()} attacked {attacked.Name()} for {attackDamage} HP");
 
                 SurviveCheck(attacked);

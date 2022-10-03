@@ -16,3 +16,4 @@ C:\Users\s2001019\source\repos\WindsOfDestruction\WindsOfDestruction\obj\Debug\n
 C:\Users\s2001019\source\repos\WindsOfDestruction\WindsOfDestruction\bin\Debug\net6.0\Newtonsoft.Json.dll
 C:\Users\s2001019\source\repos\WindsOfDestruction\WindsOfDestruction\obj\Debug\net6.0\WindsOfDestruction.csproj.CopyComplete
 C:\Users\s2001019\source\repos\WindsOfDestruction\WindsOfDestruction\bin\Debug\net6.0\fighterClasses.json
+C:\Users\s2001019\source\repos\WindsOfDestruction\WindsOfDestruction\bin\Debug\net6.0\ActionLog.json

@@ -87,6 +87,7 @@ while (i < (fm.allies.Count))
 #region Battle
 while (true) //Battle Loop
 {
+    ActionLogWriterAndReader.WriteLogTest(fm.allies);
     Random rnd = new Random();
     #region playerTurn
     TurnType();

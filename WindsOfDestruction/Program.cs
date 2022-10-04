@@ -31,7 +31,7 @@ while (true || z < 9)
 {
     Console.WriteLine("Warrior's name? (Empty to start fight)");
     string name = Console.ReadLine();
-    if (fm.allies.Count <= 0 && name == "")
+    if (UnitLists.allies.Count <= 0 && name == "")
     {
         name = "NULL";
     }
@@ -58,7 +58,7 @@ while (true || z < 9)
 
     Unit ally = new Unit(name, statCall.baseDamage, statCall.baseHP, statCall.baseHPdepleteMultiplier, statCall.baseDamageMultiplier, rt.fighters[fighterClass].specialAttacks);
 
-    fm.allies.Add(ally);
+    UnitLists.allies.Add(ally);
     Console.WriteLine($"Added {rt.fighters[fighterClass].fighterName} {name} to your Allies.");
     Console.WriteLine("--=====--");
     z++;
@@ -67,7 +67,7 @@ while (true || z < 9)
 
 #region makeEnemies
 int i = 0;
-while (i < (fm.allies.Count))
+while (i < (UnitLists.allies.Count))
 {
     Random random = new Random();
     int fighterClass = random.Next(rt.fighters.Count);
@@ -75,7 +75,7 @@ while (i < (fm.allies.Count))
 
     Unit enemy = new Unit(rt.fighters[fighterClass].fighterName, statCall.baseDamage, statCall.baseHP, statCall.baseHPdepleteMultiplier, statCall.baseDamageMultiplier, rt.fighters[fighterClass].specialAttacks);
 
-    fm.enemies.Add(enemy);
+    UnitLists.enemies.Add(enemy);
     i++;
 }
 #endregion
@@ -85,9 +85,16 @@ while (i < (fm.allies.Count))
 #endregion
 
 #region Battle
+ActionLogWriterAndReader.ResetLog();
 while (true) //Battle Loop
 {
-    ActionLogWriterAndReader.WriteLogTest(fm.allies);
+    ActionLogWriterAndReader.roundID++;
+    ActionLogWriterAndReader.WriteTeamStatusLog(UnitLists.allies, UnitLists.deadAllies, UnitLists.enemies, UnitLists.deadEnemies);
+    RestartRound:
+    if(ActionLogWriterAndReader.loadRoundToggled == true)
+    {
+
+    }
     Random rnd = new Random();
     #region playerTurn
     TurnType();
@@ -95,21 +102,21 @@ while (true) //Battle Loop
     {
         break; //Ends battle
     }
-    UpdateCooldowns(fm.allies);
+    UpdateCooldowns(UnitLists.allies);
     #endregion
     #region enemyTurn
     Console.WriteLine("--!!--");
     Console.WriteLine("The enemy approaches for an attack!");
 
-    int enemyAttacker = rnd.Next(fm.enemies.Count);
-    int alliedAttacked = rnd.Next(fm.allies.Count);
+    int enemyAttacker = rnd.Next(UnitLists.enemies.Count);
+    int alliedAttacked = rnd.Next(UnitLists.allies.Count);
     
-    fm.Attack(fm.enemies[enemyAttacker],fm.allies[alliedAttacked]);
+    fm.Attack(UnitLists.enemies[enemyAttacker], UnitLists.allies[alliedAttacked]);
     if (fm.VictoryCheck() == true)
     {
         break; //Ends battle
     }
-    UpdateCooldowns(fm.enemies);
+    UpdateCooldowns(UnitLists.enemies);
     #endregion
 }
 #endregion
@@ -148,16 +155,15 @@ void TurnType()
 
 void AttackTurn()
 {
-    AttackTurnStart:
     Console.WriteLine("--!!--");
     Console.WriteLine("The enemies braces for an attack!");
-    fm.PrintTeam(fm.allies);
+    fm.PrintTeam(UnitLists.allies);
     Console.WriteLine("Choose your attacker! [ID]");
     int alliedAttacker = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
 
     try
     {
-        int c = fm.allies[alliedAttacker].CurrentHP();
+        int c = UnitLists.allies[alliedAttacker].CurrentHP();
     }
     catch (IndexOutOfRangeException)
     {
@@ -165,13 +171,13 @@ void AttackTurn()
     }
 
     Console.WriteLine();
-    fm.PrintTeam(fm.enemies);
+    fm.PrintTeam(UnitLists.enemies);
     Console.WriteLine("Choose who to attack! [ID]");
     int enemyAttacked = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
 
     try
     {
-        int c = fm.allies[enemyAttacked].CurrentHP();
+        int c = UnitLists.allies[enemyAttacked].CurrentHP();
     }
     catch (IndexOutOfRangeException)
     {
@@ -180,21 +186,14 @@ void AttackTurn()
 
     Console.WriteLine();
 
-    if (SystemExtension.UndoCheck())
-    {
-        Console.Clear();
-        goto AttackTurnStart;
-    }
-
-    fm.Attack(fm.allies[alliedAttacker], fm.enemies[enemyAttacked]);
+    fm.Attack(UnitLists.allies[alliedAttacker], UnitLists.enemies[enemyAttacked]);
 }
 
 void SpecialAttackTurn()
 {
-    SpecialAttackTurnStart:
     Console.WriteLine("--!!--");
     Console.WriteLine("The enemies braces for an attack!");
-    fm.PrintTeam(fm.allies);
+    fm.PrintTeam(UnitLists.allies);
     Console.WriteLine("Choose your attacker! [ID]");
     int alliedAttacker = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
     Console.WriteLine();
@@ -202,7 +201,7 @@ void SpecialAttackTurn()
 
     try
     {
-        int c = fm.allies[alliedAttacker].CurrentHP();
+        int c = UnitLists.allies[alliedAttacker].CurrentHP();
     }
     catch (IndexOutOfRangeException)
     {
@@ -210,18 +209,18 @@ void SpecialAttackTurn()
     }
 
     Console.WriteLine();
-    if(fm.allies[alliedAttacker]._specialAttacks == null)
+    if(UnitLists.allies[alliedAttacker]._specialAttacks == null)
     {
         Console.Clear();
         Console.WriteLine("This character has no special attacks!");
         return;
     }
-    fm.allies[alliedAttacker].PrintSpecialAttacks();
+    UnitLists.allies[alliedAttacker].PrintSpecialAttacks();
     int specialAttackIndex = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
 
     try
     {
-        int c = fm.allies[alliedAttacker]._specialAttacks[specialAttackIndex].attackType;
+        int c = UnitLists.allies[alliedAttacker]._specialAttacks[specialAttackIndex].attackType;
     }
     catch (IndexOutOfRangeException)
     {
@@ -230,13 +229,7 @@ void SpecialAttackTurn()
 
     Console.WriteLine();
 
-    if (SystemExtension.UndoCheck())
-    {
-        Console.Clear();
-        goto SpecialAttackTurnStart;
-    }
-
-    fm.AttackDeployer(fm.allies[alliedAttacker], specialAttackIndex);
+    fm.AttackDeployer(UnitLists.allies[alliedAttacker], specialAttackIndex);
 }
 
 void UpdateCooldowns(List<Unit> team)

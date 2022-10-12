@@ -24,7 +24,7 @@ namespace WindsOfDestruction
         public static void WriteTeamStatusLog(List<Unit> allies, List<Unit> deadAllies, List<Unit> enemies, List<Unit> deadEnemies)
         {
             Turns list = JsonConvert.DeserializeObject<Turns>(File.ReadAllText(@".\ActionLog.json"));
-            Debug.Assert(list.turnContents != null);
+            //Debug.Assert(list.turnContents != null);
 
             TurnContent turnContent = new TurnContent();
             turnContent.turnID = roundID;
@@ -34,17 +34,47 @@ namespace WindsOfDestruction
             turnContent.deadEnemies = deadEnemies;
 
             list.turnContents.Add(turnContent);
-            //list.Add(turnContent);
 
             var json = JsonConvert.SerializeObject(list);
 
             System.IO.File.WriteAllText(@".\ActionLog.json", json);
         }
+
+        public static void LoadTeamStatusLog()
+        {
+            Turns list = JsonConvert.DeserializeObject<Turns>(File.ReadAllText(@".\ActionLog.json"));
+
+            roundID--;
+            
+            UnitLists.allies = list.turnContents[roundID-1].allies;
+            UnitLists.deadAllies = list.turnContents[roundID-1].deadAllies;
+            UnitLists.enemies = list.turnContents[roundID-1].enemies;
+            UnitLists.deadEnemies = list.turnContents[roundID-1].deadEnemies;
+
+            list.turnContents.RemoveAt(roundID);
+
+            var json = JsonConvert.SerializeObject(list);
+
+            System.IO.File.WriteAllText(@".\ActionLog.json", json);
+        }
+
+        public static void LoadTeamStatusBase()
+        {
+            Turns list = JsonConvert.DeserializeObject<Turns>(File.ReadAllText(@".\ActionLog.json"));
+
+            UnitLists.allies = list.turnContents[0].allies;
+            UnitLists.deadAllies = list.turnContents[0].deadAllies;
+            UnitLists.enemies = list.turnContents[0].enemies;
+            UnitLists.deadEnemies = list.turnContents[0].deadEnemies;
+
+            var json = JsonConvert.SerializeObject(list);
+
+            System.IO.File.WriteAllText(@".\ActionLog.json", json);
+        }
+
         public static void ResetLog()
         {
             Turns turns = new Turns();
-
-
 
             var json = JsonConvert.SerializeObject(turns);
 

@@ -15,6 +15,8 @@ namespace WindsOfDestruction
     }
     public class FightManager
     {
+        object input = 0;
+        int tempInt = 0;
         public void UpdateLists()
         {
             //allies to dead allies
@@ -149,25 +151,32 @@ namespace WindsOfDestruction
             unit.ChangeDamageMultiplier(unit._specialAttacks[attackIndex].Stat1);
             if (UnitLists.allies.Contains(unit))
             {
-                ExtraDamageAttackStart:
                 PrintTeam(UnitLists.enemies);
                 Console.WriteLine("Choose who to attack! [ID]");
-                int enemyAttacked = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
+                #region InputCheck
+                SystemExtension.cki = Console.ReadKey(true);
+                input = SystemExtension.Input<int>();
+                int enemyAttacked = 0;
+                //Int Check
+                if (!Char.IsNumber(SystemExtension.cki.KeyChar))
+                {
+                    input = 0;
+                }
+                else
+                {
+                    enemyAttacked = Convert.ToInt32(input);
+                }
+                //Index too big check
                 try
                 {
-                    int c = UnitLists.allies[enemyAttacked].CurrentHP();
+                    tempInt = UnitLists.enemies[enemyAttacked].CurrentHP();
                 }
                 catch (IndexOutOfRangeException)
                 {
                     enemyAttacked = 0;
                 }
+                #endregion
                 Console.WriteLine();
-
-                if (SystemExtension.UndoCheck())
-                {
-                    Console.Clear();
-                    goto ExtraDamageAttackStart;
-                }
 
                 Attack(unit, UnitLists.enemies[enemyAttacked]);
             }

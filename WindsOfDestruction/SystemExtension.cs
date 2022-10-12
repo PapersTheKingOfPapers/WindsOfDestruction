@@ -19,19 +19,21 @@ namespace WindsOfDestruction
             return JsonConvert.DeserializeObject<T>(serialized);
         }
 
-        public static bool UndoCheck()
+        public static ConsoleKeyInfo cki;
+
+        public static dynamic Input<T>()
         {
-            Console.WriteLine("Confirm action? [Z to undo]");
-            string input = Convert.ToString(Console.ReadKey().KeyChar.ToString());
-            Console.WriteLine("");
-            if (input == "z")
+            object key = cki.KeyChar;
+
+            if (cki.KeyChar == '\u001a')
             {
-                return true;
+                return "UNDO";
             }
             else
             {
-                return false;
+                return cki.KeyChar.ToString();
             }
+            return false;
         }
 
         #region WriteWithColors

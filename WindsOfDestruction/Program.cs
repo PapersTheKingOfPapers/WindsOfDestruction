@@ -2,9 +2,15 @@
 using Newtonsoft.Json;
 using System.Reflection.Emit;
 using System.Linq.Expressions;
+using System.Collections;
+using System.Globalization;
+using Microsoft.CSharp.RuntimeBinder;
+using static System.Net.Mime.MediaTypeNames;
+using System.Reflection;
 
 Console.ForegroundColor = SystemExtension.defaultForegroundColor;
 Console.BackgroundColor = SystemExtension.defaultBackgroundColor;
+//Console.TreatControlCAsInput = true;
 
 JSONFighterReader rt = JsonConvert.DeserializeObject<JSONFighterReader>(File.ReadAllText(@".\fighterClasses.json"));
 FightManager fm = new FightManager();
@@ -13,6 +19,36 @@ FightManager fm = new FightManager();
 
 int z = 0;
 
+object input = 0;
+
+int tempInt = 0;
+
+Int32 number;
+
+#endregion
+
+#region MainMenu
+Console.WriteLine("======================================");
+Console.WriteLine("Winds of Destruction");
+Console.WriteLine("");
+Console.WriteLine("Press any key to start!");
+Console.WriteLine("Press CTRL+Z to exit!");
+Console.WriteLine("");
+Console.WriteLine("======================================");
+
+#region InputCheck
+SystemExtension.cki = Console.ReadKey(true);
+input = SystemExtension.Input<int>();
+if (input.GetType() == typeof(string))
+{
+    if (input == "UNDO")
+    {
+        Environment.Exit(0);
+    }
+}
+#endregion
+
+Console.Clear();
 #endregion
 
 #region preBattle
@@ -27,7 +63,7 @@ foreach (Fighter fighter in rt.fighters)
 #region makeAllies
 Console.WriteLine("Make your team:");
 Console.WriteLine(); //Empty Line
-while (true || z < 9)
+while (true || z < 10)
 {
     Console.WriteLine("Warrior's name? (Empty to start fight)");
     string name = Console.ReadLine();
@@ -40,7 +76,20 @@ while (true || z < 9)
         break;
     }
     Console.WriteLine("Warrior's class' id?");
-    int fighterClass = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
+    #region InputCheck
+    SystemExtension.cki = Console.ReadKey(true);
+    input = SystemExtension.Input<int>();
+    int fighterClass = 0;
+    //Int Check
+    if (!Char.IsNumber(SystemExtension.cki.KeyChar))
+    {
+        input = 0;
+    }
+    else
+    {
+        fighterClass = Convert.ToInt32(input);
+    }
+    //Index inbound check
     try
     {
         int c = rt.fighters[fighterClass].id;
@@ -49,6 +98,8 @@ while (true || z < 9)
     {
         fighterClass = 0;
     }
+    #endregion
+
     Console.WriteLine();
     if (!rt.fighters.Any(item=>item.id == fighterClass))
     {
@@ -88,16 +139,191 @@ while (i < (UnitLists.allies.Count))
 ActionLogWriterAndReader.ResetLog();
 while (true) //Battle Loop
 {
+    #region ALWAR
+    RoundStart:
     ActionLogWriterAndReader.roundID++;
     ActionLogWriterAndReader.WriteTeamStatusLog(UnitLists.allies, UnitLists.deadAllies, UnitLists.enemies, UnitLists.deadEnemies);
     RestartRound:
-    if(ActionLogWriterAndReader.loadRoundToggled == true)
+    if(ActionLogWriterAndReader.loadRoundToggled == true && ActionLogWriterAndReader.roundID > 1)
     {
-
+        ActionLogWriterAndReader.LoadTeamStatusLog();
+        Console.Clear();
+        ActionLogWriterAndReader.loadRoundToggled = false;
     }
+    else if(ActionLogWriterAndReader.loadRoundToggled == true && ActionLogWriterAndReader.roundID == 1)
+    {
+        ActionLogWriterAndReader.LoadTeamStatusBase();
+        Console.Clear();
+        ActionLogWriterAndReader.loadRoundToggled = false;
+    }
+    #endregion
     Random rnd = new Random();
+    Console.WriteLine("Current Round ID: " + ActionLogWriterAndReader.roundID);
     #region playerTurn
-    TurnType();
+
+    Console.WriteLine("--!!--");
+    Console.WriteLine("What will you do!"); // Choose what the fuck yo gonna do
+    Console.WriteLine("0: Attack!");
+    Console.WriteLine("1: Use a special action!");
+    Console.WriteLine("CTRL + Z: Undo Possible in this section!");
+    #region InputCheck
+    SystemExtension.cki = Console.ReadKey(true);
+    input = SystemExtension.Input<int>();
+    if(input.GetType() == typeof(string))
+    {
+        if (input == "UNDO")
+        {
+            ActionLogWriterAndReader.loadRoundToggled = true;
+            goto RestartRound;
+            //goto RoundStart;
+        }
+    }
+    int turnChoice = 0;
+    //Int Check
+    if (input.GetType() != typeof(int))
+    {
+        input = 0;
+    }
+    else
+    {
+        turnChoice = Convert.ToInt32(input);
+    }
+    #endregion
+    Console.Clear();
+    switch (turnChoice)
+    {
+        default:
+        case 0:
+            Console.WriteLine("--!!--");
+            Console.WriteLine("The enemies braces for an attack!");
+            fm.PrintTeam(UnitLists.allies);
+            Console.WriteLine("Choose your attacker! [ID]");
+
+            #region InputCheck
+            SystemExtension.cki = Console.ReadKey(true);
+            input = SystemExtension.Input<int>();
+            int alliedAttacker = 0;
+            //Int Check
+            if (!Char.IsNumber(SystemExtension.cki.KeyChar))
+            {
+                input = 0;
+            }
+            else
+            {
+                alliedAttacker = Convert.ToInt32(input);
+            }
+            //Index too big check
+            try
+            {
+                tempInt = UnitLists.allies[alliedAttacker].CurrentHP();
+            }
+            catch (IndexOutOfRangeException)
+            {
+                alliedAttacker = 0;
+            }
+            #endregion
+
+            Console.WriteLine();
+            fm.PrintTeam(UnitLists.enemies);
+            Console.WriteLine("Choose who to attack! [ID]");
+
+            #region InputCheck
+            SystemExtension.cki = Console.ReadKey(true);
+            input = SystemExtension.Input<int>();
+            int enemyAttacked = 0;
+            //Int Check
+            if (!Char.IsNumber(SystemExtension.cki.KeyChar))
+            {
+                input = 0;
+            }
+            else
+            {
+                enemyAttacked = Convert.ToInt32(input);
+            }
+            //Index too big check
+            try
+            {
+                tempInt = UnitLists.enemies[enemyAttacked].CurrentHP();
+            }
+            catch (IndexOutOfRangeException)
+            {
+                enemyAttacked = 0;
+            }
+            #endregion
+            Console.WriteLine();
+
+            fm.Attack(UnitLists.allies[alliedAttacker], UnitLists.enemies[enemyAttacked]);
+            break;
+        case 1:
+            Console.WriteLine("--!!--");
+            Console.WriteLine("The enemies braces for an attack!");
+            fm.PrintTeam(UnitLists.allies);
+            Console.WriteLine("Choose your attacker! [ID]");
+
+            #region InputCheck
+            SystemExtension.cki = Console.ReadKey(true);
+            input = SystemExtension.Input<int>();
+            int alliedAttacker1 = 0;
+            //Int Check
+            if (!Char.IsNumber(SystemExtension.cki.KeyChar))
+            {
+                input = 0;
+            }
+            else
+            {
+                alliedAttacker1 = Convert.ToInt32(input);
+            }
+            //Index too big check
+            try
+            {
+                tempInt = UnitLists.allies[alliedAttacker1].CurrentHP();
+            }
+            catch (IndexOutOfRangeException)
+            {
+                alliedAttacker = 0;
+            }
+            #endregion
+            Console.WriteLine();
+            Console.WriteLine("What will they do!");
+            Console.WriteLine();
+            if (UnitLists.allies[alliedAttacker1]._specialAttacks == null)
+            {
+                Console.Clear();
+                Console.WriteLine("This character has no special attacks!");
+                goto AfterPlayerTurn;
+            }
+            UnitLists.allies[alliedAttacker1].PrintSpecialAttacks();
+
+            #region InputCheck
+            SystemExtension.cki = Console.ReadKey(true);
+            input = SystemExtension.Input<int>();
+            int specialAttackIndex = 0;
+            //Int Check
+            if (!Char.IsNumber(SystemExtension.cki.KeyChar))
+            {
+                input = 0;
+            }
+            else
+            {
+                specialAttackIndex = Convert.ToInt32(input);
+            }
+            //Index too big check
+            try
+            {
+                int c = UnitLists.allies[alliedAttacker1]._specialAttacks[specialAttackIndex].attackType;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                specialAttackIndex = 0;
+            }
+            #endregion
+
+            Console.WriteLine();
+
+            fm.AttackDeployer(UnitLists.allies[alliedAttacker1], specialAttackIndex);
+            break;
+    }
+    AfterPlayerTurn:
     if (fm.VictoryCheck() == true)
     {
         break; //Ends battle
@@ -123,115 +349,6 @@ while (true) //Battle Loop
 
 #region Methods
 
-void TurnType()
-{
-    Console.WriteLine("--!!--");
-    Console.WriteLine("What will you do!"); // Choose what the fuck yo gonna do
-    Console.WriteLine("0: Attack!");
-    Console.WriteLine("1: Use a special action!");
-    int turnChoice = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
-    try
-    {
-        int c = turnChoice;
-    }
-    catch (IndexOutOfRangeException)
-    {
-        turnChoice = 0;
-    }
-    Console.Clear();
-    switch (turnChoice)
-    {
-        default:
-            AttackTurn();
-            break;
-        case 0:
-            AttackTurn();
-            break;
-        case 1:
-            SpecialAttackTurn();
-            break;
-    }
-}
-
-void AttackTurn()
-{
-    Console.WriteLine("--!!--");
-    Console.WriteLine("The enemies braces for an attack!");
-    fm.PrintTeam(UnitLists.allies);
-    Console.WriteLine("Choose your attacker! [ID]");
-    int alliedAttacker = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
-
-    try
-    {
-        int c = UnitLists.allies[alliedAttacker].CurrentHP();
-    }
-    catch (IndexOutOfRangeException)
-    {
-        alliedAttacker = 0;
-    }
-
-    Console.WriteLine();
-    fm.PrintTeam(UnitLists.enemies);
-    Console.WriteLine("Choose who to attack! [ID]");
-    int enemyAttacked = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
-
-    try
-    {
-        int c = UnitLists.allies[enemyAttacked].CurrentHP();
-    }
-    catch (IndexOutOfRangeException)
-    {
-        enemyAttacked = 0;
-    }
-
-    Console.WriteLine();
-
-    fm.Attack(UnitLists.allies[alliedAttacker], UnitLists.enemies[enemyAttacked]);
-}
-
-void SpecialAttackTurn()
-{
-    Console.WriteLine("--!!--");
-    Console.WriteLine("The enemies braces for an attack!");
-    fm.PrintTeam(UnitLists.allies);
-    Console.WriteLine("Choose your attacker! [ID]");
-    int alliedAttacker = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
-    Console.WriteLine();
-    Console.WriteLine("What will they do!");
-
-    try
-    {
-        int c = UnitLists.allies[alliedAttacker].CurrentHP();
-    }
-    catch (IndexOutOfRangeException)
-    {
-        alliedAttacker = 0;
-    }
-
-    Console.WriteLine();
-    if(UnitLists.allies[alliedAttacker]._specialAttacks == null)
-    {
-        Console.Clear();
-        Console.WriteLine("This character has no special attacks!");
-        return;
-    }
-    UnitLists.allies[alliedAttacker].PrintSpecialAttacks();
-    int specialAttackIndex = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
-
-    try
-    {
-        int c = UnitLists.allies[alliedAttacker]._specialAttacks[specialAttackIndex].attackType;
-    }
-    catch (IndexOutOfRangeException)
-    {
-        specialAttackIndex = 0;
-    }
-
-    Console.WriteLine();
-
-    fm.AttackDeployer(UnitLists.allies[alliedAttacker], specialAttackIndex);
-}
-
 void UpdateCooldowns(List<Unit> team)
 {
     Console.WriteLine("--!!-- STATUS ALERT! --!!--");
@@ -243,7 +360,33 @@ void UpdateCooldowns(List<Unit> team)
 
 #endregion
 
-Console.WriteLine("Press any key to close...");
-Console.ReadLine();
+#region EndScreen
+Console.WriteLine("======================================");
+Console.WriteLine("");
+Console.WriteLine("Press any key to restart!");
+Console.WriteLine("Press CTRL+Z to exit!");
+Console.WriteLine("");
+Console.WriteLine("======================================");
+
+#region InputCheck
+SystemExtension.cki = Console.ReadKey(true);
+input = SystemExtension.Input<int>();
+if (input.GetType() == typeof(string))
+{
+    if (input == "UNDO")
+    {
+        Environment.Exit(0);
+    }
+}
+#endregion
+
+Console.Clear();
+
+// Starts a new instance of the program itself
+System.Diagnostics.Process.Start(@".\WindsOfDestruction.exe");
+
+// Closes the current process
+Environment.Exit(0);
+#endregion
 
 

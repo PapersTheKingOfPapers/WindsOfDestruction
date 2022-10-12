@@ -6,10 +6,39 @@ using System.Threading.Tasks;
 
 namespace WindsOfDestruction
 {
+    public static class UnitLists
+    {
+        public static List<Unit> allies = new List<Unit>();
+        public static List<Unit> enemies = new List<Unit>();
+        public static List<Unit> deadAllies = new List<Unit>();
+        public static List<Unit> deadEnemies = new List<Unit>();
+    }
     public class FightManager
     {
-        public List<Unit> allies = new List<Unit>();
-        public List<Unit> enemies = new List<Unit>();
+        object input = 0;
+        int tempInt = 0;
+        public void UpdateLists()
+        {
+            //allies to dead allies
+            var alliedDead = UnitLists.allies.Where(unit => unit.AliveStatus() == false).ToList();
+            alliedDead.ForEach(item => UnitLists.allies.Remove(item));
+            UnitLists.deadAllies.AddRange(alliedDead);
+
+            //Dead allies to allies
+            var alliedAlive = UnitLists.deadAllies.Where(unit => unit.AliveStatus() == true).ToList();
+            alliedAlive.ForEach(item => UnitLists.deadAllies.Remove(item));
+            UnitLists.allies.AddRange(alliedAlive);
+
+            //enemies to Dead enemies
+            var enemiesDead = UnitLists.enemies.Where(unit => unit.AliveStatus() == false).ToList();
+            enemiesDead.ForEach(item => UnitLists.enemies.Remove(item));
+            UnitLists.deadEnemies.AddRange(enemiesDead);
+
+            //dead enemies to Enemies
+            var enemiesAlive = UnitLists.deadEnemies.Where(unit => unit.AliveStatus() == true).ToList();
+            enemiesAlive.ForEach(item => UnitLists.deadEnemies.Remove(item));
+            UnitLists.enemies.AddRange(enemiesAlive);
+        }
 
         public void Attack(Unit attacker, Unit attacked)
         {
@@ -31,7 +60,6 @@ namespace WindsOfDestruction
                 int hpBeforeAttack = attacked.CurrentHP();
                 attacked.Damage(attacker.Attack());
                 int attackDamage = hpBeforeAttack - attacked.CurrentHP();
-
                 Console.WriteLine($"{attacker.Name()} attacked {attacked.Name()} for {attackDamage} HP");
 
                 SurviveCheck(attacked);
@@ -44,24 +72,18 @@ namespace WindsOfDestruction
                 Console.WriteLine("!-==!==-!");
                 Console.WriteLine($"{attacked.Name()} died.");
                 Console.WriteLine("!-==!==-!");
-                if (allies.Contains(attacked))
-                {
-                    allies.Remove(attacked);
-                }
-                else if (enemies.Contains(attacked))
-                {
-                    enemies.Remove(attacked);
-                }
+                attacked.KillUnit();
             }
         }
         public bool VictoryCheck()
         {
-            if (enemies.Count == 0)
+            UpdateLists();
+            if (UnitLists.enemies.Count == 0)
             {
                 Victory("allied");
                 return true;
             }
-            else if (allies.Count == 0)
+            else if (UnitLists.allies.Count == 0)
             {
                 Victory("enemies");
                 return true;
@@ -78,12 +100,15 @@ namespace WindsOfDestruction
         {
             for (int x = 0; x < team.Count; x++)
             {
-                double currentHP = team[x].CurrentHP();
-                double temp = currentHP / team[x].MaxHP() * 100;
-                int healthPercent = Convert.ToInt32(Math.Ceiling(temp));
-                Console.WriteLine($"{team[x].Name()}, ID: {x}");
-                ValueBar.WriteProgressBar(healthPercent, ConsoleColor.DarkYellow);
-                Console.WriteLine($" {currentHP} / {team[x].MaxHP()}");
+                if (team[x].AliveStatus() == true)
+                {
+                    double currentHP = team[x].CurrentHP();
+                    double temp = currentHP / team[x].MaxHP() * 100;
+                    int healthPercent = Convert.ToInt32(Math.Ceiling(temp));
+                    Console.WriteLine($"{team[x].Name()}, ID: {x}");
+                    ValueBar.WriteProgressBar(healthPercent, ConsoleColor.DarkYellow);
+                    Console.WriteLine($" {currentHP} / {team[x].MaxHP()}");
+                }
             }
         }
 
@@ -124,35 +149,42 @@ namespace WindsOfDestruction
         public void ExtraDamageAttack(Unit unit, int attackIndex)
         {
             unit.ChangeDamageMultiplier(unit._specialAttacks[attackIndex].Stat1);
-            if (allies.Contains(unit))
+            if (UnitLists.allies.Contains(unit))
             {
-                ExtraDamageAttackStart:
-                PrintTeam(enemies);
+                PrintTeam(UnitLists.enemies);
                 Console.WriteLine("Choose who to attack! [ID]");
-                int enemyAttacked = Convert.ToInt32(Console.ReadKey().KeyChar.ToString());
+                #region InputCheck
+                SystemExtension.cki = Console.ReadKey(true);
+                input = SystemExtension.Input<int>();
+                int enemyAttacked = 0;
+                //Int Check
+                if (!Char.IsNumber(SystemExtension.cki.KeyChar))
+                {
+                    input = 0;
+                }
+                else
+                {
+                    enemyAttacked = Convert.ToInt32(input);
+                }
+                //Index too big check
                 try
                 {
-                    int c = allies[enemyAttacked].CurrentHP();
+                    tempInt = UnitLists.enemies[enemyAttacked].CurrentHP();
                 }
                 catch (IndexOutOfRangeException)
                 {
                     enemyAttacked = 0;
                 }
+                #endregion
                 Console.WriteLine();
 
-                if (SystemExtension.UndoCheck())
-                {
-                    Console.Clear();
-                    goto ExtraDamageAttackStart;
-                }
-
-                Attack(unit, enemies[enemyAttacked]);
+                Attack(unit, UnitLists.enemies[enemyAttacked]);
             }
-            else if (enemies.Contains(unit))
+            else if (UnitLists.enemies.Contains(unit))
             {
                 Random rnd = new Random();
-                int ally = rnd.Next(allies.Count);
-                Attack(unit, allies[ally]);
+                int ally = rnd.Next(UnitLists.allies.Count);
+                Attack(unit, UnitLists.allies[ally]);
             }
             unit.ResetDamageMultiplier();
             unit._specialAttacks[attackIndex].currentCoolDown = unit._specialAttacks[attackIndex].attackCoolDown + 1;
@@ -170,16 +202,16 @@ namespace WindsOfDestruction
         public void AreaAttack(Unit unit, int attackIndex)
         {
             unit.ChangeDamage(Convert.ToSingle(unit._specialAttacks[attackIndex].Stat1));
-            if (allies.Contains(unit))
+            if (UnitLists.allies.Contains(unit))
             {
-                foreach(Unit enemy in enemies)
+                foreach(Unit enemy in UnitLists.enemies)
                 {
                     Attack(unit, enemy);
                 }
             }
-            else if (enemies.Contains(unit))
+            else if (UnitLists.enemies.Contains(unit))
             {
-                foreach (Unit ally in allies)
+                foreach (Unit ally in UnitLists.allies)
                 {
                     Attack(unit, ally);
                 }

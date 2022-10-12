@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,29 +11,29 @@ namespace WindsOfDestruction
     public class Unit
     {
         #region Variables
-        private string _name { get; set; }
+        //Name
+        public string _name { get; set; }
         //Iniciating damage value
-        private float _baseDamage { get; set; }
+        public float _baseDamage { get; set; }
         //Iniciating HP value
-        private int _baseHP { get; set; }
+        public int _baseHP { get; set; }
         //0 -> 0.1* damage recieved multiplier, 1 = 1* damage recieved multiplier, 0.1 = 0% and 1 = 100% value, 2 = 200% value
-        private double _baseHPdepleteMultiplier { get; set; }
+        public double _baseHPdepleteMultiplier { get; set; }
         // 0 -> 0.1* damage given multiplier, 1 = 1* damage given multiplier, 0.1 = 0% and 1 = 100% value, 2 = 200% value
-        private double _baseDamageMultiplier { get; set; }
-
+        public double _baseDamageMultiplier { get; set; }
         //Applied Attack damage value, affected by multipliers.
-        private float _currentDamage { get; set; }
-
+        public float _currentDamage { get; set; }
         //Applied HP value, affected by multipliers.
-        private int _currentHP { get; set; }
-
+        public int _currentHP { get; set; }
         //0 -> 0.1* damage recieved multiplier, 1 = 1* damage recieved multiplier, 0.1 = 0% and 1 = 100% value, 2 = 200% value
-        private double _currentHPdepleteMultiplier { get; set; }
+        public double _currentHPdepleteMultiplier { get; set; }
         // 0 -> 0.1* damage given multiplier, 1 = 1* damage given multiplier, 0.1 = 0% and 1 = 100% value, 2 = 200% value
-        private double _currentDamageMultiplier { get; set; }
+        public double _currentDamageMultiplier { get; set; }
         public List<SpecialAttack> _specialAttacks { get; set; }
-        private bool shieldAttackActive { get; set; }
-        private double _counterDamage { get; set; }
+        public bool shieldAttackActive { get; set; }
+        public double _counterDamage { get; set; }
+        public string _UnitSpecificKey { get; set; }
+        public bool _alive { get; set; }
         #endregion
 
         public Unit(string name, float baseDamage, int baseHP, double baseHPdepleteMultiplier, double baseDamageMultiplier, List<SpecialAttack> specialAttacks)
@@ -52,6 +53,9 @@ namespace WindsOfDestruction
             this._specialAttacks = specialAttacks.Clone();
             this.shieldAttackActive = false;
             this._counterDamage = 0;
+
+            this._UnitSpecificKey = Guid.NewGuid().ToString();
+            this._alive = true;
         }
 
         //Check Methods
@@ -72,6 +76,29 @@ namespace WindsOfDestruction
         }
 
         //Update methods
+        public void LoadWholeUnitFile(string name, float baseDamage, int baseHP, double baseHPdepleteMultiplier, double baseDamageMultiplier, 
+            float currentDamage, int currentHP, double currentHPdepleteMultiplier, double currentDamageMultiplier, 
+            List<SpecialAttack> specialAttacks, bool shieldAttackActive, double counterDamage, string unitSpecificKey, bool alive)
+        {
+            this._name = name;
+            this._baseDamage = baseDamage;
+            this._baseHP = baseHP;
+            this._baseHPdepleteMultiplier = baseHPdepleteMultiplier;
+            this._baseDamageMultiplier = baseDamageMultiplier;
+
+            this._currentDamage = currentDamage;
+            this._currentHP = currentHP;
+
+            this._currentHPdepleteMultiplier = Math.Clamp(currentHPdepleteMultiplier, 0, 2);
+            this._currentDamageMultiplier = Math.Clamp(currentDamageMultiplier, 0.1, 2);
+
+            this._specialAttacks = specialAttacks.Clone();
+            this.shieldAttackActive = shieldAttackActive;
+            this._counterDamage = counterDamage;
+
+            this._UnitSpecificKey = unitSpecificKey;
+            this._alive = alive;
+        }
         public void ChangeDamage(float newDamageValue)
         {
             this._currentDamage = newDamageValue;
@@ -153,6 +180,10 @@ namespace WindsOfDestruction
         {
             this._counterDamage = counterDamageValue;
         }
+        public void KillUnit()
+        {
+            this._alive = false;
+        }
 
         //Information methods
         public void PrintSpecialAttacks()
@@ -182,6 +213,10 @@ namespace WindsOfDestruction
         public double CounterDamageValue()
         {
             return this._counterDamage;
+        }
+        public bool AliveStatus()
+        {
+            return this._alive;
         }
     }
 }

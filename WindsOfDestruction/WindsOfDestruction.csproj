@@ -8,10 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ActionLog.json" />
     <None Remove="fighterClasses.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="ActionLog.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="fighterClasses.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>

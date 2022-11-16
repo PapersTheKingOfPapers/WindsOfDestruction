@@ -19,23 +19,6 @@ namespace WindsOfDestruction
             return JsonConvert.DeserializeObject<T>(serialized);
         }
 
-        public static ConsoleKeyInfo cki;
-
-        public static dynamic Input<T>()
-        {
-            object key = cki.KeyChar;
-
-            if (cki.KeyChar == '\u001a')
-            {
-                return "UNDO";
-            }
-            else
-            {
-                return cki.KeyChar.ToString();
-            }
-            return false;
-        }
-
         #region WriteWithColors
         //Write Colored
         public static void WriteColored(string inputText, ConsoleColor foregroundColor)

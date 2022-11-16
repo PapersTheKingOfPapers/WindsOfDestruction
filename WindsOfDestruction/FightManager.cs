@@ -153,29 +153,8 @@ namespace WindsOfDestruction
             {
                 PrintTeam(UnitLists.enemies);
                 Console.WriteLine("Choose who to attack! [ID]");
-                #region InputCheck
-                SystemExtension.cki = Console.ReadKey(true);
-                input = SystemExtension.Input<int>();
+
                 int enemyAttacked = 0;
-                //Int Check
-                if (!Char.IsNumber(SystemExtension.cki.KeyChar))
-                {
-                    input = 0;
-                }
-                else
-                {
-                    enemyAttacked = Convert.ToInt32(input);
-                }
-                //Index too big check
-                try
-                {
-                    tempInt = UnitLists.enemies[enemyAttacked].CurrentHP();
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    enemyAttacked = 0;
-                }
-                #endregion
                 Console.WriteLine();
 
                 Attack(unit, UnitLists.enemies[enemyAttacked]);

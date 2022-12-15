@@ -180,7 +180,7 @@ while (true) //Battle Loop
     }
     int turnChoice = 0;
     //Int Check
-    if (input.GetType() != typeof(int))
+    if (!Char.IsNumber(SystemExtension.cki.KeyChar))
     {
         input = 0;
     }
